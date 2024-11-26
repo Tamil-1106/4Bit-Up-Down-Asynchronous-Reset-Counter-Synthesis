@@ -1,4 +1,4 @@
-# 4Bit-Up-Down-Asynchronous-Reset-Counter-Synthesis
+# EXP 4: 4Bit Up-Down Counter Asynchronous Reset Counter-Synthesize the Gate Level Netlist and tabulate Area, Power and Timing reports.
 
 ## Aim:
 
@@ -20,12 +20,13 @@ Synthesis requires three files as follows,
 
 ◦ SDC (Synopsis Design Constraint) File (.sdc)
 
- ### Step 2 : Creating an SDC File
+ ### Step 2 : Creating an SDC , .v File
 
 •	In your terminal type “gedit input_constraints.sdc” to create an SDC File if you do not have one.
 
-•	The SDC File must contain the following commands;
+•	The SDC File must contain the following commands:
 
+```
 create_clock -name clk -period 2 -waveform {0 1} [get_ports "clk"]
 
 set_clock_transition -rise 0.1 [get_clocks "clk"]
@@ -45,6 +46,52 @@ ii, iii → Sets Clock Rise and Fall time to 100ps.
 iv → Sets Clock Uncertainty to 10ps.
 
 v, vi → Sets the maximum limit for I/O port delay to 1ps.
+```
+•	The .v File must contain the following commands:
+
+```
+`timescale 1ns / 1 ns
+module counter(clk,m,rst,count);
+input clk,m,rst;
+output reg [3:0] count;
+always@(posedge clk or negedge rst)
+begin
+if (!rst)
+count=0;
+else if(m)
+count=count+1;
+else
+count=count-1;
+end
+endmodule
+```
+•	The Run.tcl File must contain the following commands:
+
+```
+read_libs /cadence/install/FOUNDRY-01/digital/90nm/dig/lib/slow.lib
+read_hdl counter.v
+elaborate
+read_sdc input_constraints.sdc 
+
+syn_generic
+report_area
+syn_map
+report_area
+syn_opt
+report_area 
+
+report_area > counter_area.txt
+report_power > counter_power.txt
+report_timing > counter_timing.txt
+report_area > counter_cell.txt
+report_gates > counter_gates.txt
+
+write_hdl > counter_netlist.v
+write_sdc > output_constraints.sdc 
+
+gui_show
+
+```
 
 ### Step 3 : Performing Synthesis
 
@@ -65,11 +112,20 @@ used.
 
 #### Synthesis RTL Schematic :
 
+![Screenshot 2024-11-26 103451](https://github.com/user-attachments/assets/5bfab821-a886-4d15-8b0d-2d22396d1b3f)
+
 #### Area report:
+![Screenshot 2024-11-26 103516](https://github.com/user-attachments/assets/0c9a8e63-f062-49ae-8624-389c9560bd81)
+
 
 #### Power Report:
+![Screenshot 2024-11-26 103612](https://github.com/user-attachments/assets/30e9cab5-66f8-46ac-bae7-dd28cce31f3c)
+
 
 #### Timing Report: 
+
+![Screenshot 2024-11-26 103558](https://github.com/user-attachments/assets/b9cb3695-17f9-406c-8892-92866729666b)
+
 
 #### Result: 
 
